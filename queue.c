@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include "queue.h"
 
-int initializeRRQueue(RRqueue* q, int associativity){
+void initializeRRQueue(RRqueue* q, int associativity){
    q->maxSize = associativity;
+   q->front = -1;
+   q->rear = 0;
 }
 bool isFull(RRqueue* q){
    if(q->rear == q->maxSize){
@@ -20,7 +22,7 @@ bool isEmpty(RRqueue* q){
 }
 void enqueue(RRqueue* q, cacheNode* node){
    if(isFull(q)){
-      return NULL;
+      return;
    }
 
    q->items[q->rear] = node;

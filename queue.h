@@ -11,10 +11,10 @@ typedef struct RRqueue{
    int rear;
 }RRqueue;
 
-int initializeRRQueue(RRqueue* q, int associativity);
+void initializeRRQueue(RRqueue* q, int associativity);
 bool isFull(RRqueue* q);
 bool isEmpty(RRqueue* q);
-cacheNode* enqueue(RRqueue* q, cacheNode* node);
-cacheNode* dequeue(RRqueue* q)
+void enqueue(RRqueue* q, cacheNode* node);
+cacheNode* dequeue(RRqueue* q);
 
 #endif
