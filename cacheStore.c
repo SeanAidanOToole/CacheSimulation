@@ -1,7 +1,7 @@
 #include "cacheStore.h"
 #include "queue.h"
 
-cacheRow* initializeCacheRow(int associativity, int blockNum){
+cacheRow* initializeCache(int associativity, int blockNum){
    cacheRow* cache;
    int maxIndex;
    int i;
@@ -19,4 +19,6 @@ cacheRow* initializeCacheRow(int associativity, int blockNum){
          cache->nodes[i] = (cacheNode*)malloc(sizeof(cacheNode));
       }
    }
+
+   return cache;
 }
