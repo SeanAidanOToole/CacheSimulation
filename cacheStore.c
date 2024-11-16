@@ -1,24 +1,29 @@
 #include "cacheStore.h"
 #include "queue.h"
 
-cacheRow* initializeCache(int associativity, int blockNum){
-   cacheRow* cache;
+int initializeCache(cacheRow** cache, int associativity, int blockNum){
    int maxIndex;
    int i;
    int j;
 
    maxIndex = blockNum / associativity;
 
-   cache = (cacheRow*)malloc(sizeof(cacheRow) * maxIndex);
+   cache = (cacheRow**)malloc(sizeof(cacheRow*) * maxIndex);
 
    for(i = 0; i < maxIndex; i++){
-      cache->nodeQueue = (RRqueue*)malloc(sizeof(RRqueue));
-      initializeRRQueue(cache->nodeQueue, associativity);
-
+      cache[i] = malloc(sizeof(cacheRow));
+      
+      initializeRRQueue(cache[i]->nodeQueue, associativity);
+      cache[i]->nodes = (cacheNode**)malloc(sizeof(cacheNode) * associativity);
       for(j = 0; j < associativity; j++){
-         cache->nodes[i] = (cacheNode*)malloc(sizeof(cacheNode));
+         cache[i]->nodes[j] = malloc(sizeof(cacheRow));
+         cache[i]->nodes[j]->validBit = 0;
       }
    }
 
-   return cache;
+   return maxIndex;
+}
+
+int insertElement(int MaxIndex, int Associativity, int index, int tag, int offset, int blockSize){
+   
 }
