@@ -24,6 +24,21 @@ int initializeCache(cacheRow** cache, int associativity, int blockNum){
    return maxIndex;
 }
 
-int insertElement(int MaxIndex, int Associativity, int index, int tag, int offset, int blockSize){
-   
+int insertElement(cacheRow** cache, int MaxIndex, int Associativity, int index, int tag, int offset, int blockSize){
+   int i;
+   /*Capacity Miss*/
+   if(index > MaxIndex){
+      return -1;
+   }
+
+   for(i = 0; i < Associativity; i++){
+      /*hit*/
+      if(cache[index]->nodes[i]->validBit == 0){
+         cache[index]->nodes[i]->tag = tag;
+         cache[index]->nodes[i]->validBit = 1;
+         return i;
+      }
+   }
+
+   /*miss?*/
 }
