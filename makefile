@@ -5,7 +5,7 @@ all: project
 clean:
 	rm -f *.o project
 
-project.o: project.c
+project.o: project.c queue.h cacheStore.h
 	$(CC) $(FLAGS) -c project.c
 cacheStore.o: cacheStore.c cacheStore.h queue.h data.h
 	$(CC) $(FLAGS) -c cacheStore.c

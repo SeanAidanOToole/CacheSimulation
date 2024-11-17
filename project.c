@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <stdbool.h>
+#include "queue.h"
+#include "cacheStore.h"
 #define EMPTY -1
 
 int main (int argc, char *argv[]){
