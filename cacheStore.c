@@ -3,18 +3,17 @@
 #include "cacheStore.h"
 #include "data.h"
 
-int initializeCache(cacheRow** cache, int associativity, int blockNum){
-   int maxIndex;
+cacheRow** initializeCache(int maxIndex, int associativity, int blockNum){
+   cacheRow** cache;
    int i;
    int j;
-
-   maxIndex = blockNum / associativity;
 
    cache = (cacheRow**)malloc(sizeof(cacheRow*) * maxIndex);
 
    for(i = 0; i < maxIndex; i++){
       cache[i] = malloc(sizeof(cacheRow));
       
+      cache[i]->nodeQueue = malloc(sizeof(RRqueue));
       initializeRRQueue(cache[i]->nodeQueue, associativity);
       cache[i]->nodes = (cacheNode**)malloc(sizeof(cacheNode) * associativity);
       for(j = 0; j < associativity; j++){
@@ -23,7 +22,7 @@ int initializeCache(cacheRow** cache, int associativity, int blockNum){
       }
    }
 
-   return maxIndex;
+   return cache;
 }
 
 int insertElement(cacheRow** cache, int MaxIndex, int Associativity, int index, int tag, int offset, int blockSize){
@@ -43,4 +42,5 @@ int insertElement(cacheRow** cache, int MaxIndex, int Associativity, int index, 
    }
 
    /*miss?*/
+   return -1;
 }

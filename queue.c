@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "queue.h"
 
 void initializeRRQueue(RRqueue* q, int associativity){
+   q->items = malloc(sizeof(cacheNode) * associativity);
    q->maxSize = associativity;
    q->front = -1;
    q->rear = 0;

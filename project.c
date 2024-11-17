@@ -147,6 +147,13 @@ int main (int argc, char *argv[]){
 
 	printf("ERROR\n");
 
+	cacheRow** cacheStore;
+	int maxIndex;
+
+
+	maxIndex = blockNum / assc;
+	cacheStore = initializeCache(maxIndex, assc, blockNum);
+
 	if((filein = fopen(trace1, "r"))){
 		while(!feof(filein)){
 			fgets(buffer, 100, filein);
