@@ -31,7 +31,7 @@ void enqueue(RRqueue* q, cacheNode* node){
 cacheNode* dequeue(RRqueue* q){
    cacheNode* currNode;
 
-   if(isEmpty){
+   if(isEmpty(q)){
       return NULL;
    }
 

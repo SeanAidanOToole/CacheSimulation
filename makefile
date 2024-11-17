@@ -1,11 +1,16 @@
 CC = gcc
-FLAGS = -Wall -std=c99
+FLAGS = -Wall -std=c99 -lm
 
-project2: milestone1 generate.o
-	$(CC) $(FLAGS) -o project2 milestone1.o cacheStore.o
-milestone1.o:
-	$(CC) $(FLAGS) -c -o milestone1.o milestone1.c
-cacheStore.o:
-	$(CC) $(FLAGS) -c -o cacheStore.o cacheStore.c
+all: project
 clean:
-	rm *.o project1
+	rm -f *.o project
+
+project.o: project.c
+	$(CC) $(FLAGS) -c project.c
+cacheStore.o: cacheStore.c cacheStore.h queue.h data.h
+	$(CC) $(FLAGS) -c cacheStore.c
+queue.o: queue.c queue.h data.h cacheStore.h
+	$(CC) $(FLAGS) -c queue.c
+
+project: project.o cacheStore.o queue.o
+	$(CC) $(FLAGS) -o project project.o cacheStore.o queue.o

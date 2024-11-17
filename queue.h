@@ -1,15 +1,8 @@
-#ifndef QUENE_H
-#define QUENE_H
+#ifndef QUEUE_H
+#define QUEUE_H
 
 #include <stdbool.h>
-#include "cacheStore.h"
-
-typedef struct RRqueue{
-   cacheNode** items;
-   int maxSize;
-   int front;
-   int rear;
-}RRqueue;
+#include "data.h"
 
 void initializeRRQueue(RRqueue* q, int associativity);
 bool isFull(RRqueue* q);

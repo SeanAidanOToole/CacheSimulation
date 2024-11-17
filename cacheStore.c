@@ -1,5 +1,7 @@
-#include "cacheStore.h"
+#include <stdlib.h>
 #include "queue.h"
+#include "cacheStore.h"
+#include "data.h"
 
 int initializeCache(cacheRow** cache, int associativity, int blockNum){
    int maxIndex;
