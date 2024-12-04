@@ -6,7 +6,7 @@ typedef struct PtEntry {
    int logicalAddress;
    int physicalAddress;
    time_t timeLastUsed;
-   PtEntry *next;
+   struct PtEntry *next;
 } PtEntry;
 
 /*this is a liked list containing all page table entries*/

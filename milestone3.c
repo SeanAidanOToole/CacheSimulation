@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "pagetable.h"
 #define EMPTY -1
 
 // global variables
@@ -406,4 +407,10 @@ int main(int argc, char *argv[]) {
    return 0;
 
    //********************pagetable test*********************
+   pagetable* pt;
+   int testSize = 7;
+
+   pt = initPtTable(testSize);
+
+   
 }

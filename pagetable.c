@@ -16,7 +16,7 @@ PtEntry *createEntry(pagetable *pt, int address) {
    PtEntry *currEntry;
    currEntry = malloc(sizeof(PtEntry));
    currEntry->next = NULL;
-   time(currEntry->timeLastUsed);
+   time(&currEntry->timeLastUsed);
    currEntry->logicalAddress = address;
    currEntry->physicalAddress = logicalToPhysicalConvert(address, pt->curLen);
 
@@ -42,9 +42,8 @@ int findNextEmpty(PtEntry *head) {
 }
 int insertToPt(pagetable *pt, PtEntry *currEntry) {
    int index;
-   int curInd;
+   int curInd = 2;
    PtEntry *curr;
-   PtEntry *prev;
 
    if (pt->curLen == pt->maxLen) {
       return 1;
@@ -56,7 +55,6 @@ int insertToPt(pagetable *pt, PtEntry *currEntry) {
 
    index = findNextEmpty(pt->head);
    curr = pt->head;
-   prev = NULL;
 
    /*case if next avaible index is head*/
    if (index == 1) {
@@ -76,26 +74,24 @@ int insertToPt(pagetable *pt, PtEntry *currEntry) {
       pt->tail->next = currEntry;
       pt->tail = currEntry;
       pt->curLen++;
-      return;
+      return 0;
    }
 
    /*case if the next avaible index is between the head and tail of the pagetable*/
-   while (curr->next != NULL && index != curInd) {
-      while (curr->next != NULL) {
-         /*increment list*/
-         curr = curr->next;
-         curInd++;
-         /*reached index to add*/
-         if (curInd == index + 1) {
-            currEntry->next = curr->next;
-            curr->next = currEntry;
-            return 0;
-         }
+   while (curr->next != NULL) {
+      /*increment list*/
+      curr = curr->next;
+      curInd++;
+      /*reached index to add*/
+      if (curInd == index + 1) {
+         currEntry->next = curr->next;
+         curr->next = currEntry;
+         return 0;
       }
-
-      /*failed to add to list*/
-      return 1;
    }
+
+   /*failed to add to list*/
+   return 1;
 }
 int FindLRU(PtEntry *head) {
    int currInd = 1;
@@ -155,7 +151,7 @@ int removeElement(pagetable *pt, int index) {
    return 1;
 }
 
-printPt(pagetable *pt) {
+int printPt(pagetable *pt) {
    PtEntry *curr;
 
    printf("\n***** Contents of page table *****\n\n");
