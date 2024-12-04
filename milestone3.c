@@ -404,4 +404,6 @@ int main(int argc, char *argv[]) {
    printf("Unused Cache Blocks:\t\t%d / %d\n", ((int)blockNum - blockCount), (int)blockNum);
 
    return 0;
+
+   //********************pagetable test*********************
 }

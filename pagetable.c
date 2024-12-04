@@ -2,11 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-pagetable *initPtTable() {
+pagetable *initPtTable(int maxLength) {
    pagetable *currPageTable;
    currPageTable = malloc(sizeof(pagetable));
    currPageTable->head = NULL;
    currPageTable->tail = NULL;
+   currPageTable->curLen = 0;
+   currPageTable->maxLen = maxLength;
 
    return currPageTable;
 }
@@ -43,6 +45,10 @@ int insertToPt(pagetable *pt, PtEntry *currEntry) {
    int curInd;
    PtEntry *curr;
    PtEntry *prev;
+
+   if(pt->curLen == pt->maxLen){
+      return 1;
+   }
 
    if (pt->head == NULL) {
       return 1;

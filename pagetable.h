@@ -17,7 +17,7 @@ typedef struct pagetable {
    int curLen;
 } pagetable;
 
-pagetable *initPtTable();                              /*create the pagetable structure*/
+pagetable *initPtTable(int maxLength);                 /*create the pagetable structure*/
 PtEntry *createEntry(pagetable pt, int address);       /*create an pagetable entry*/
 int logicalToPhysicalConvert(int address, int offset); /*convert logical address to physical address*/
 int findNextEmpty(PtEntry *head);                      /*return the next empty index of the page table if there isnt one return -1*/
