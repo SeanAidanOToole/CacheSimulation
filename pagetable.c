@@ -12,13 +12,13 @@ pagetable *initPtTable(int maxLength) {
 
    return currPageTable;
 }
-PtEntry *createEntry(pagetable pt, int address) {
+PtEntry *createEntry(pagetable *pt, int address) {
    PtEntry *currEntry;
    currEntry = malloc(sizeof(PtEntry));
    currEntry->next = NULL;
    time(currEntry->timeLastUsed);
    currEntry->logicalAddress = address;
-   currEntry->physicalAddress = logicalToPhysicalConvert(address, pt.curLen);
+   currEntry->physicalAddress = logicalToPhysicalConvert(address, pt->curLen);
 
    return currEntry;
 }
@@ -46,7 +46,7 @@ int insertToPt(pagetable *pt, PtEntry *currEntry) {
    PtEntry *curr;
    PtEntry *prev;
 
-   if(pt->curLen == pt->maxLen){
+   if (pt->curLen == pt->maxLen) {
       return 1;
    }
 
@@ -155,21 +155,21 @@ int removeElement(pagetable *pt, int index) {
    return 1;
 }
 
-printPt(pagetable *pt){
-   PtEntry* curr;
-   
+printPt(pagetable *pt) {
+   PtEntry *curr;
+
    printf("\n***** Contents of page table *****\n\n");
    printf("Max length: %d\n", pt->maxLen);
    printf("Current length: %d\n", pt->curLen);
-   
+
    curr = pt->head;
 
-   while (curr != NULL){
+   while (curr != NULL) {
       printf("Logical Address %x\n", curr->logicalAddress);
       printf("Physical Address %x\n", curr->physicalAddress);
 
       curr = curr->next;
    }
-   
+
    return 0;
 }

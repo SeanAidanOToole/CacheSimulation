@@ -18,7 +18,7 @@ typedef struct pagetable {
 } pagetable;
 
 pagetable *initPtTable(int maxLength);                 /*create the pagetable structure*/
-PtEntry *createEntry(pagetable pt, int address);       /*create an pagetable entry*/
+PtEntry *createEntry(pagetable *pt, int address);      /*create an pagetable entry*/
 int logicalToPhysicalConvert(int address, int offset); /*convert logical address to physical address*/
 int findNextEmpty(PtEntry *head);                      /*return the next empty index of the page table if there isnt one return -1*/
 int insertToPt(pagetable *pt, PtEntry *currEntry);     /*insert entry to point return 0 if suceesful, return 1 if failed*/
