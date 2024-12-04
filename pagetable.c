@@ -148,3 +148,22 @@ int removeElement(pagetable *pt, int index) {
    /*reached end of list and failed to remove*/
    return 1;
 }
+
+printPt(pagetable *pt){
+   PtEntry* curr;
+   
+   printf("\n***** Contents of page table *****\n\n");
+   printf("Max length: %d\n", pt->maxLen);
+   printf("Current length: %d\n", pt->curLen);
+   
+   curr = pt->head;
+
+   while (curr != NULL){
+      printf("Logical Address %x\n", curr->logicalAddress);
+      printf("Physical Address %x\n", curr->physicalAddress);
+
+      curr = curr->next;
+   }
+   
+   return 0;
+}
