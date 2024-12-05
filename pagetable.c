@@ -50,7 +50,7 @@ int findNextEmpty(pagetable *pt) {
    return currInd + 1;
 }
 int insertToPt(pagetable *pt, PtEntry *currEntry) {
-   int index = 1;
+   int index;
    int curInd = 2;
    PtEntry *curr;
 
@@ -98,19 +98,22 @@ int insertToPt(pagetable *pt, PtEntry *currEntry) {
    /*failed to add to list*/
    return 1;
 }
-int FindLRU(PtEntry *head) {
+int FindLRU(pagetable *pt) {
+   PtEntry *curr;
    int currInd = 1;
    int LRUindex = 0;
    int LRUCycle = INT_MAX;
 
-   while (head->next != NULL) {
-      if (LRUCycle < head->cycleLastUsed) {
+   curr = pt->head;
+
+   while (curr != NULL) {
+      if (LRUCycle > curr->cycleLastUsed) {
          LRUindex = currInd;
-         LRUCycle = head->cycleLastUsed;
+         LRUCycle = curr->cycleLastUsed;
       }
 
       currInd++;
-      head = head->next;
+      curr = curr->next;
    }
 
    return LRUindex;

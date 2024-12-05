@@ -411,11 +411,12 @@ int main(int argc, char *argv[]) {
 
    pt = initPtTable(testSize);
 
-   insertToPt(pt, createEntry(pt, 212121111415, 1));
-   insertToPt(pt, createEntry(pt, 545648165175, 2));
-   insertToPt(pt, createEntry(pt, 5456175, 3));
+   insertToPt(pt, createEntry(pt, 212121111415, 7));
+   insertToPt(pt, createEntry(pt, 545648165175, 3));
+   insertToPt(pt, createEntry(pt, 5456175, 7));
 
    printPt(pt);
+   printf("LRU %d\n", FindLRU(pt));
 
    return 0;
 }
