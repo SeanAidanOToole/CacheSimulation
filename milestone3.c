@@ -411,9 +411,9 @@ int main(int argc, char *argv[]) {
 
    pt = initPtTable(testSize);
 
-   insertToPt(pt, createEntry(pt, 212121111415));
-   insertToPt(pt, createEntry(pt, 545648165175));
-   insertToPt(pt, createEntry(pt, 5456175));
+   insertToPt(pt, createEntry(pt, 212121111415, 1));
+   insertToPt(pt, createEntry(pt, 545648165175, 2));
+   insertToPt(pt, createEntry(pt, 5456175, 3));
 
    printPt(pt);
 

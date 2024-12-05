@@ -1,4 +1,5 @@
 #include "pagetable.h"
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -12,11 +13,11 @@ pagetable *initPtTable(int maxLength) {
 
    return currPageTable;
 }
-PtEntry *createEntry(pagetable *pt, int address) {
+PtEntry *createEntry(pagetable *pt, int address, int cycle) {
    PtEntry *currEntry;
    currEntry = malloc(sizeof(PtEntry));
    currEntry->next = NULL;
-   currEntry->timeLastUsed = time(NULL);
+   currEntry->cycleLastUsed = cycle;
    currEntry->logicalAddress = address;
    currEntry->physicalAddress = logicalToPhysicalConvert(address, pt->curLen);
 
@@ -59,7 +60,6 @@ int insertToPt(pagetable *pt, PtEntry *currEntry) {
 
    index = findNextEmpty(pt);
    curr = pt->head;
-   printf("\nCurrent index: %d\n", index);
 
    /*case if next avaible index is head*/
    if (index == 1) {
@@ -100,20 +100,20 @@ int insertToPt(pagetable *pt, PtEntry *currEntry) {
 }
 int FindLRU(PtEntry *head) {
    int currInd = 1;
-   int LRU = 0;
-   time_t LRUtime = 0;
+   int LRUindex = 0;
+   int LRUCycle = INT_MAX;
 
    while (head->next != NULL) {
-      if (LRUtime < head->timeLastUsed) {
-         LRU = currInd;
-         LRUtime = head->timeLastUsed;
+      if (LRUCycle < head->cycleLastUsed) {
+         LRUindex = currInd;
+         LRUCycle = head->cycleLastUsed;
       }
 
       currInd++;
       head = head->next;
    }
 
-   return LRU;
+   return LRUindex;
 }
 int removeElement(pagetable *pt, int index) {
    int currIndex = 1;
@@ -170,7 +170,7 @@ int printPt(pagetable *pt) {
       printf("\nElement: %d \n", index);
       printf("Logical Address %x\n", curr->logicalAddress);
       printf("Physical Address %x\n", curr->physicalAddress);
-      printf("Time: %ld\n", curr->timeLastUsed);
+      printf("Cycle last Used: %d\n", curr->cycleLastUsed);
 
       curr = curr->next;
       index++;
