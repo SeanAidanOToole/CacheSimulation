@@ -16,7 +16,7 @@ PtEntry *createEntry(pagetable *pt, int address) {
    PtEntry *currEntry;
    currEntry = malloc(sizeof(PtEntry));
    currEntry->next = NULL;
-   time(&currEntry->timeLastUsed);
+   currEntry->timeLastUsed = time(NULL);
    currEntry->logicalAddress = address;
    currEntry->physicalAddress = logicalToPhysicalConvert(address, pt->curLen);
 
