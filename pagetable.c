@@ -31,10 +31,18 @@ int logicalToPhysicalConvert(int address, int offset) {
 
    return offset + (ptNum << 7);
 }
-int findNextEmpty(PtEntry *head) {
+int findNextEmpty(pagetable *pt) {
+   PtEntry *curr;
    int currInd = 1;
-   while (head->next != NULL) {
-      head = head->next;
+
+   if (pt->head == NULL) {
+      return 1;
+   }
+
+   curr = pt->head;
+
+   while (curr->next != NULL) {
+      curr = curr->next;
       currInd++;
    }
 
@@ -49,8 +57,9 @@ int insertToPt(pagetable *pt, PtEntry *currEntry) {
       return 1;
    }
 
-   //index = findNextEmpty(pt->head);
+   index = findNextEmpty(pt);
    curr = pt->head;
+   printf("\nCurrent index: %d\n", index);
 
    /*case if next avaible index is head*/
    if (index == 1) {
@@ -66,7 +75,7 @@ int insertToPt(pagetable *pt, PtEntry *currEntry) {
    }
 
    /*case if next avaible index is tail*/
-   if (index == pt->curLen) {
+   if (index == pt->curLen + 1) {
       pt->tail->next = currEntry;
       pt->tail = currEntry;
       pt->curLen++;

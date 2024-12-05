@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #define EMPTY -1
 
 // global variables
@@ -412,6 +413,8 @@ int main(int argc, char *argv[]) {
 
    insertToPt(pt, createEntry(pt, 212121111415));
    insertToPt(pt, createEntry(pt, 545648165175));
+   usleep(5000);
+   insertToPt(pt, createEntry(pt, 5456175));
 
    printPt(pt);
 
