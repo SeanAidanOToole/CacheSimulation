@@ -413,14 +413,14 @@ int main(int argc, char *argv[]) {
    pt = initPtTable(testSize);
    pt2 = initPtTable(testSize);
 
-   insertToPt(pt, createEntry(pt, 212121111415, 7));
+   insertToPt(pt, createEntry(pt, 212121111415, 5));
    insertToPt(pt, createEntry(pt, 545648165175, 3));
-   insertToPt(pt, createEntry(pt, 5456175, 7));
+   insertToPt(pt, createEntry(pt, 5456175, 1));
 
+   printf("LRU %d\n", FindLRU(pt));
    removeElement(pt, FindLRU(pt));
 
    printPt(pt);
-   printf("LRU %d\n", FindLRU(pt));
 
    return 0;
 }

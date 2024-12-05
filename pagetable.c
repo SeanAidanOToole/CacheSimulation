@@ -139,6 +139,24 @@ int removeElement(pagetable *pt, int index) {
       return 0;
    }
 
+   /*case if the element is the last one to be removed*/
+   if (index == pt->curLen) {
+      while (curr != NULL) {
+         /*reached end of list*/
+         if (currIndex == pt->curLen) {
+            free(pt->tail);
+            pt->tail = prev;
+            pt->tail->next = NULL;
+         }
+
+         prev = curr;
+         curr = curr->next;
+         currIndex++;
+      }
+
+      return 0;
+   }
+
    while (curr->next != NULL) {
       /*reached index to delete*/
       if (currIndex == index) {
