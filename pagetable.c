@@ -23,10 +23,9 @@ PtEntry *createEntry(pagetable *pt, int address, int cycle) {
 
    return currEntry;
 }
-int logicalToPhysicalConvert(int address, int offset) {
-   int ptNum;
+int logicalToPhysicalConvert(int address, int ptNum) {
+   int offset;
 
-   ptNum = 1;
    offset = address << 5;
    offset = offset >> 5;
 
