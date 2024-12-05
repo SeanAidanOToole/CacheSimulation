@@ -1,9 +1,9 @@
+#include "pagetable.h"
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "pagetable.h"
 #define EMPTY -1
 
 // global variables
@@ -404,13 +404,16 @@ int main(int argc, char *argv[]) {
    printf("Unused Cache Space:\t\t%0.2f KB / %0.2f KB = %0.2f Waste: $%0.2f\n", unusedC, implementation / (double)1024, unusedP * 100, waste);
    printf("Unused Cache Blocks:\t\t%d / %d\n", ((int)blockNum - blockCount), (int)blockNum);
 
-   return 0;
-
    //********************pagetable test*********************
-   pagetable* pt;
+   pagetable *pt;
    int testSize = 7;
 
    pt = initPtTable(testSize);
 
-   
+   insertToPt(pt, createEntry(pt, 212121111415));
+   insertToPt(pt, createEntry(pt, 545648165175));
+
+   printPt(pt);
+
+   return 0;
 }

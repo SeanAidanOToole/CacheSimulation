@@ -41,7 +41,7 @@ int findNextEmpty(PtEntry *head) {
    return currInd + 1;
 }
 int insertToPt(pagetable *pt, PtEntry *currEntry) {
-   int index;
+   int index = 1;
    int curInd = 2;
    PtEntry *curr;
 
@@ -49,11 +49,7 @@ int insertToPt(pagetable *pt, PtEntry *currEntry) {
       return 1;
    }
 
-   if (pt->head == NULL) {
-      return 1;
-   }
-
-   index = findNextEmpty(pt->head);
+   //index = findNextEmpty(pt->head);
    curr = pt->head;
 
    /*case if next avaible index is head*/
@@ -153,6 +149,7 @@ int removeElement(pagetable *pt, int index) {
 
 int printPt(pagetable *pt) {
    PtEntry *curr;
+   int index = 1;
 
    printf("\n***** Contents of page table *****\n\n");
    printf("Max length: %d\n", pt->maxLen);
@@ -161,10 +158,13 @@ int printPt(pagetable *pt) {
    curr = pt->head;
 
    while (curr != NULL) {
+      printf("\nElement: %d \n", index);
       printf("Logical Address %x\n", curr->logicalAddress);
       printf("Physical Address %x\n", curr->physicalAddress);
+      printf("Time: %ld\n", curr->timeLastUsed);
 
       curr = curr->next;
+      index++;
    }
 
    return 0;
