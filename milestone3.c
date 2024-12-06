@@ -1,5 +1,6 @@
 #include "pagetable.h"
 #include <math.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -215,65 +216,78 @@ int main(int argc, char *argv[]) {
       }
    }
 
-   if ((filein = fopen(trace1, "r"))) {
-      while (!feof(filein)) {
-         fgets(buffer, 100, filein);
-         sscanf(buffer, "EIP (%d): %x", &length, &intAddr);
+   /*file reading*/
+   FILE *file1 = NULL;
+   FILE *file2 = NULL;
+   FILE *file3 = NULL;
+   FILE *currFile;
+   int timeInFile1 = timeSlice;
+   int timeInFile2 = timeSlice;
+   int timeInFile3 = timeSlice;
+   bool file1Valid = false;
+   bool file2Valid = false;
+   bool file3Valid = false;
 
-         offset = intAddr << (32 - offsetbits);   // shift left to find the offset
-         offset = offset >> (32 - offsetbits);    // shift right to bring the offset back
-         tag = intAddr >> (32 - tagbits);         // shift right to cut everything but the tag
-         index = intAddr << tagbits;              // shift left to cut off the tag
-         index = index >> (offsetbits + tagbits); // shift right by the rest of the bits to bring it back
-         numAddress += 1;
-         addrCycle += 2;
-         instructionCount += 1;
-         insertCache(row, assc, cache, tag, index, offset, length, maxOffset, &instBytes);
+   /*open all files*/
+   file1 = fopen(trace1, "r");
+   file2 = fopen(trace2, "r");
+   file3 = fopen(trace3, "r");
 
-         // caching for srcD and srcM
-         fgets(buffer, 100, filein);
-         sscanf(buffer, "dstM: %x %s    srcM: %x", &dstM, blank, &srcM);
-
-         if (dstM != 0) { // cut out all of the dst with 0 for the addresses
-
-            offset = intAddr << (32 - offsetbits);
-            offset = offset >> (32 - offsetbits);
-            tag = intAddr >> (32 - tagbits);
-            index = intAddr << tagbits;
-            index = index >> (offsetbits + tagbits);
-            numAddress += 1;
-            // caching for dstM
-            insertCache(row, assc, cache, tag, index, offset, 4, maxOffset, &srcdstBytes);
+   do {
+      /*check which files are open and not end of file*/
+      if (file1 != NULL) {
+         if (!feof(file1)) {
+            file1Valid = true;
+         } else {
+            file1Valid = false;
          }
-
-         if (srcM != 0) {
-            offset = intAddr << (32 - offsetbits);
-            offset = offset >> (32 - offsetbits);
-            tag = intAddr >> (32 - tagbits);
-            index = intAddr << tagbits;
-            index = index >> (offsetbits + tagbits);
-            numAddress += 1;
-            // caching for srcM
-            insertCache(row, assc, cache, tag, index, offset, 4, maxOffset, &srcdstBytes);
-         }
-         if (srcM != 0 || dstM != 0) {
-            addrCycle += 1;
-            instructionCount += 1;
-         }
-
-         fgets(buffer, 100, filein);
       }
-   } else {
-      printf("file did not open\n");
-   }
+      if (file2 != NULL) {
+         if (!feof(file2)) {
+            file2Valid = true;
+         } else {
+            file2Valid = false;
+         }
+      }
+      if (file3 != NULL) {
+         if (!feof(file3)) {
+            file3Valid = true;
+         } else {
+            file3Valid = false;
+         }
+      }
 
-   //	fclose(filein);
+      /*decide what file to currently use*/
+      if (file1 != NULL && !feof(file1) && timeInFile1 != 0) {
+         currFile = file1;
+         timeInFile1--;
+      } else if (file2 != NULL && !feof(file2) && timeInFile2 != 0) {
+         currFile = file2;
+         timeInFile2--;
+      } else if (file3 != NULL && !feof(file3) && timeInFile3 != 0) {
+         currFile = file3;
+         timeInFile3--;
+      }
 
-   // second trace file
-   if ((filein = fopen(trace2, "r"))) {
-      while (!feof(filein)) {
-         fgets(buffer, 100, filein);
-         sscanf(buffer, "EIP (%d): %x", &length, &intAddr);
+      /*read from the file and do the cacheing calculations*/
+      fgets(buffer, 100, currFile);
+      sscanf(buffer, "EIP (%d): %x", &length, &intAddr);
+
+      offset = intAddr << (32 - offsetbits);   // shift left to find the offset
+      offset = offset >> (32 - offsetbits);    // shift right to bring the offset back
+      tag = intAddr >> (32 - tagbits);         // shift right to cut everything but the tag
+      index = intAddr << tagbits;              // shift left to cut off the tag
+      index = index >> (offsetbits + tagbits); // shift right by the rest of the bits to bring it back
+      numAddress += 1;
+      addrCycle += 2;
+      instructionCount += 1;
+      insertCache(row, assc, cache, tag, index, offset, length, maxOffset, &instBytes);
+
+      // caching for srcD and srcM
+      fgets(buffer, 100, currFile);
+      sscanf(buffer, "dstM: %x %s    srcM: %x", &dstM, blank, &srcM);
+
+      if (dstM != 0) { // cut out all of the dst with 0 for the addresses
 
          offset = intAddr << (32 - offsetbits);
          offset = offset >> (32 - offsetbits);
@@ -281,106 +295,34 @@ int main(int argc, char *argv[]) {
          index = intAddr << tagbits;
          index = index >> (offsetbits + tagbits);
          numAddress += 1;
-         addrCycle += 2;
-         instructionCount += 1;
-         insertCache(row, assc, cache, tag, index, offset, length, maxOffset, &instBytes);
-
-         // caching for srcD and srcM
-         fgets(buffer, 100, filein);
-         sscanf(buffer, "dstM: %x %s    srcM: %x", &dstM, blank, &srcM);
-
-         if (dstM != 0) {
-
-            offset = intAddr << (32 - offsetbits);
-            offset = offset >> (32 - offsetbits);
-            tag = intAddr >> (32 - tagbits);
-            index = intAddr << tagbits;
-            index = index >> (offsetbits + tagbits);
-            numAddress += 1;
-            // caching for dstM
-            insertCache(row, assc, cache, tag, index, offset, 4, maxOffset, &srcdstBytes);
-         }
-
-         if (srcM != 0) {
-            offset = intAddr << (32 - offsetbits);
-            offset = offset >> (32 - offsetbits);
-            tag = intAddr >> (32 - tagbits);
-            index = intAddr << tagbits;
-            index = index >> (offsetbits + tagbits);
-            numAddress += 1;
-            // caching for srcM
-            insertCache(row, assc, cache, tag, index, offset, 4, maxOffset, &srcdstBytes);
-         }
-
-         if (dstM != 0 || srcM != 0) {
-            instructionCount += 1;
-            addrCycle += 1;
-         }
-
-         fgets(buffer, 100, filein);
+         // caching for dstM
+         insertCache(row, assc, cache, tag, index, offset, 4, maxOffset, &srcdstBytes);
       }
-   } else {
-      printf("File did not open.\n");
-   }
 
-   //	fclose(filein);
-
-   // third trace file
-   if ((filein = fopen(trace3, "r"))) {
-      while (!feof(filein)) {
-         fgets(buffer, 100, filein);
-         sscanf(buffer, "EIP (%d): %x", &length, &intAddr);
-
+      if (srcM != 0) {
          offset = intAddr << (32 - offsetbits);
          offset = offset >> (32 - offsetbits);
          tag = intAddr >> (32 - tagbits);
          index = intAddr << tagbits;
          index = index >> (offsetbits + tagbits);
          numAddress += 1;
-         addrCycle += 2;
-         instructionCount += 1;
-         insertCache(row, assc, cache, tag, index, offset, length, maxOffset, &instBytes);
-
-         // caching for srcD and srcM
-         fgets(buffer, 100, filein);
-         sscanf(buffer, "dstM: %x %s    srcM: %x", &dstM, blank, &srcM);
-
-         if (dstM != 0) {
-
-            offset = intAddr << (32 - offsetbits);
-            offset = offset >> (32 - offsetbits);
-            tag = intAddr >> (32 - tagbits);
-            index = intAddr << tagbits;
-            index = index >> (offsetbits + tagbits);
-            numAddress += 1;
-            // caching for dstM
-            insertCache(row, assc, cache, tag, index, offset, 4, maxOffset, &srcdstBytes);
-         }
-
-         if (srcM != 0) {
-            offset = intAddr << (32 - offsetbits);
-            offset = offset >> (32 - offsetbits);
-            tag = intAddr >> (32 - tagbits);
-            index = intAddr << tagbits;
-            index = index >> (offsetbits + tagbits);
-            numAddress += 1;
-            // caching for srcM
-            insertCache(row, assc, cache, tag, index, offset, 4, maxOffset, &srcdstBytes);
-         }
-
-         if (srcM != 0 || dstM != 0) {
-            addrCycle += 1;
-            instructionCount += 1;
-         }
-
-         fgets(buffer, 100, filein);
+         // caching for srcM
+         insertCache(row, assc, cache, tag, index, offset, 4, maxOffset, &srcdstBytes);
       }
-      fclose(filein);
-   } else {
-      printf("File did not open.\n");
-   }
+      if (srcM != 0 || dstM != 0) {
+         addrCycle += 1;
+         instructionCount += 1;
+      }
 
-   //	fclose(filein);
+      fgets(buffer, 100, currFile);
+
+      /*reset coutners when all timers reach 0*/
+      if (timeInFile1 == 0 && timeInFile2 && timeInFile3) {
+         timeInFile1 = timeSlice;
+         timeInFile2 = timeSlice;
+         timeInFile3 = timeSlice;
+      }
+   } while (file1Valid || file2Valid || file3Valid);
 
    int cacheMiss = confMiss + compMiss;
    double missRate = (cacheMiss * 100) / (double)cacheAccess;
@@ -404,23 +346,6 @@ int main(int argc, char *argv[]) {
    printf("CPI:\t\t\t\t%0.2f Cycles/Instruction\t(%d)\n", totalCycles / (double)instructionCount, instructionCount);
    printf("Unused Cache Space:\t\t%0.2f KB / %0.2f KB = %0.2f Waste: $%0.2f\n", unusedC, implementation / (double)1024, unusedP * 100, waste);
    printf("Unused Cache Blocks:\t\t%d / %d\n", ((int)blockNum - blockCount), (int)blockNum);
-
-   //********************pagetable test*********************
-   pagetable *pt;
-   pagetable *pt2;
-   int testSize = 7;
-
-   pt = initPtTable(testSize);
-   pt2 = initPtTable(testSize);
-
-   insertToPt(pt, createEntry(pt, 212121111415, 5));
-   insertToPt(pt, createEntry(pt, 545648165175, 3));
-   insertToPt(pt, createEntry(pt, 5456175, 1));
-
-   printf("LRU %d\n", FindLRU(pt));
-   removeElement(pt, FindLRU(pt));
-
-   printPt(pt);
 
    return 0;
 }
