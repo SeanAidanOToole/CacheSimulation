@@ -304,11 +304,11 @@ int main(int argc, char *argv[]) {
       sscanf(buffer, "EIP (%d): %x", &length, &intAddr);
 
       /*create page table entry*/
-      currEntry = createEntry(pt1, intAddr, currCycle);
+      currEntry = createEntry(currPt, intAddr, currCycle);
 
       /*check if the element currently exists*/
       if (findIfElementexists(currPt, currEntry->logicalAddress) == false) {
-         pageFaults++; /*miss*/
+         /*miss*/
          /*page table is full*/
          if (pagesUsed > pSystem) {
             /*chose witch page table to remove page from*/
@@ -331,7 +331,10 @@ int main(int argc, char *argv[]) {
             /*remove a page and add the new page in*/
             removeElement(currRemove, FindLRU(currRemove));
             insertToPt(currPt, currEntry);
+            pageFaults++;
+
          } else { /*page table is not full*/
+            pagesFreed++;
             insertToPt(currPt, currEntry);
          }
          pagesUsed++;
@@ -413,7 +416,7 @@ int main(int argc, char *argv[]) {
    printf("Unused Cache Space:\t\t%0.2f KB / %0.2f KB = %0.2f Waste: $%0.2f\n", unusedC, implementation / (double)1024, unusedP * 100, waste);
    printf("Unused Cache Blocks:\t\t%d / %d\n", ((int)blockNum - blockCount), (int)blockNum);
 
-   int pagesUser = pSystem / 3;
+   int pagesUser = pSystem - pagesUsed;
 
    printf("\n\n\n***** ***** PHYSICAL MEMORY SIMULATION RESULTS: ***** *****\n\n");
    printf("Physical pages used by system: %f\n", pSystem);
@@ -421,10 +424,26 @@ int main(int argc, char *argv[]) {
    printf("Virtual Pages mapped: %d\n", pageHits + pagesFreed);
    printf("\t----------\n");
    printf("\tPage Table Hits: %d\n", pageHits);
-   printf("\tPages from Free: 0\n");
+   printf("\tPages from Free: %d\n", pagesFreed);
    printf("\tTotal Page Faults: %d\n\n\n", pageFaults);
    printf("Page Table Useage Per Process");
    printf("\t----------\n");
+
+   if (file1 != NULL) {
+      printf("%s:\n", trace1);
+      printf("\tUsed Page Table Entries: %d  (%.2lf)\n", pt1->curLen, pt1->curLen / pSystem);
+      printf("\tPage Table Wasted: %lf bytes\n", (pSystem - pt1->curLen) * pageTableSize);
+   }
+   if (file2 != NULL) {
+      printf("%s:\n", trace2);
+      printf("\tUsed Page Table Entries: %d  (%.2lf)\n", pt2->curLen, pt2->curLen / pSystem);
+      printf("\tPage Table Wasted: %lf bytes\n", (pSystem - pt2->curLen) * pageTableSize);
+   }
+   if (file3 != NULL) {
+      printf("%s:\n", trace3);
+      printf("\tUsed Page Table Entries: %d  (%.2lf)\n", pt3->curLen, pt3->curLen / pSystem);
+      printf("\tPage Table Wasted: %lf bytes\n", (pSystem - pt3->curLen) * pageTableSize);
+   }
 
    return 0;
 }
