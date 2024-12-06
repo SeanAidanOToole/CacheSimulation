@@ -227,11 +227,38 @@ int main(int argc, char *argv[]) {
    bool file1Valid = false;
    bool file2Valid = false;
    bool file3Valid = false;
+   pagetable *pt1;
+   pagetable *pt2;
+   pagetable *pt3;
+   pagetable *currPt;
+   pagetable *currRemove;
+   PtEntry *currEntry;
+   int filesOpen = 0;
+   int pageToRemove;
+   int currCycle = 1;
+   int pageFaults = 0;
+   int pageHits = 0;
+   int pagesUsed = 0;
+   int pagesFreed = 0;
 
    /*open all files*/
    file1 = fopen(trace1, "r");
    file2 = fopen(trace2, "r");
    file3 = fopen(trace3, "r");
+
+   /*init all page tables*/
+   if (file1 != NULL) {
+      pt1 = initPtTable(pSystem);
+      filesOpen++;
+   }
+   if (file2 != NULL) {
+      pt2 = initPtTable(pSystem);
+      filesOpen++;
+   }
+   if (file3 != NULL) {
+      pt3 = initPtTable(pSystem);
+      filesOpen++;
+   }
 
    do {
       /*check which files are open and not end of file*/
@@ -260,18 +287,57 @@ int main(int argc, char *argv[]) {
       /*decide what file to currently use*/
       if (file1 != NULL && !feof(file1) && timeInFile1 != 0) {
          currFile = file1;
+         currPt = pt1;
          timeInFile1--;
       } else if (file2 != NULL && !feof(file2) && timeInFile2 != 0) {
          currFile = file2;
+         currPt = pt2;
          timeInFile2--;
       } else if (file3 != NULL && !feof(file3) && timeInFile3 != 0) {
          currFile = file3;
+         currPt = pt3;
          timeInFile3--;
       }
 
       /*read from the file and do the cacheing calculations*/
       fgets(buffer, 100, currFile);
       sscanf(buffer, "EIP (%d): %x", &length, &intAddr);
+
+      /*create page table entry*/
+      currEntry = createEntry(pt1, intAddr, currCycle);
+
+      /*check if the element currently exists*/
+      if (findIfElementexists(currPt, currEntry->logicalAddress) == false) {
+         pageFaults++; /*miss*/
+         /*page table is full*/
+         if (pagesUsed > pSystem) {
+            /*chose witch page table to remove page from*/
+            pageToRemove = rand() % (filesOpen - 1 + 1) + 1;
+            printf("%d ", pageToRemove);
+            switch (pageToRemove) {
+            case 1:
+               currRemove = pt1;
+               break;
+            case 2:
+               currRemove = pt2;
+               break;
+            case 3:
+               currRemove = pt3;
+               break;
+            default:
+               break;
+            }
+
+            /*remove a page and add the new page in*/
+            removeElement(currRemove, FindLRU(currRemove));
+            insertToPt(currPt, currEntry);
+         } else { /*page table is not full*/
+            insertToPt(currPt, currEntry);
+         }
+         pagesUsed++;
+      } else {
+         pageHits++; /*hit*/
+      }
 
       offset = intAddr << (32 - offsetbits);   // shift left to find the offset
       offset = offset >> (32 - offsetbits);    // shift right to bring the offset back
@@ -346,6 +412,19 @@ int main(int argc, char *argv[]) {
    printf("CPI:\t\t\t\t%0.2f Cycles/Instruction\t(%d)\n", totalCycles / (double)instructionCount, instructionCount);
    printf("Unused Cache Space:\t\t%0.2f KB / %0.2f KB = %0.2f Waste: $%0.2f\n", unusedC, implementation / (double)1024, unusedP * 100, waste);
    printf("Unused Cache Blocks:\t\t%d / %d\n", ((int)blockNum - blockCount), (int)blockNum);
+
+   int pagesUser = pSystem / 3;
+
+   printf("\n\n\n***** ***** PHYSICAL MEMORY SIMULATION RESULTS: ***** *****\n\n");
+   printf("Physical pages used by system: %f\n", pSystem);
+   printf("Pages Avaible to user: %d\n\n", pagesUser);
+   printf("Virtual Pages mapped: %d\n", pageHits + pagesFreed);
+   printf("\t----------\n");
+   printf("\tPage Table Hits: %d\n", pageHits);
+   printf("\tPages from Free: 0\n");
+   printf("\tTotal Page Faults: %d\n\n\n", pageFaults);
+   printf("Page Table Useage Per Process");
+   printf("\t----------\n");
 
    return 0;
 }

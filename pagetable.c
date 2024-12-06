@@ -176,6 +176,32 @@ int removeElement(pagetable *pt, int index) {
    return 1;
 }
 
+bool findIfElementexists(pagetable *pt, int logicaladdress) {
+   PtEntry *curr;
+   int currInd = 1;
+
+   if (pt->head == NULL) {
+      return false;
+   }
+
+   curr = pt->head;
+
+   if (pt->head->logicalAddress == logicaladdress || pt->tail->logicalAddress == logicaladdress) {
+      return true;
+   }
+
+   while (curr->next != NULL){
+      if(curr->logicalAddress == logicaladdress){
+         return true;
+      }
+
+      curr = curr->next;
+      currInd++;
+   }
+   
+   return false;
+}
+
 int printPt(pagetable *pt) {
    PtEntry *curr;
    int index = 1;

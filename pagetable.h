@@ -1,7 +1,7 @@
 #ifndef PAGETABLE_H
 #define PAGETABLE_H
 
-#include <time.h>
+#include <stdbool.h>
 typedef struct PtEntry {
    int logicalAddress;
    int physicalAddress;
@@ -23,6 +23,7 @@ int logicalToPhysicalConvert(int address, int ptNum);        /*convert logical a
 int findNextEmpty(pagetable *pt);                            /*return the next empty index of the page table if there isnt one return -1*/
 int insertToPt(pagetable *pt, PtEntry *currEntry);           /*insert entry to point return 0 if suceesful, return 1 if failed*/
 int FindLRU(pagetable *pt);                                  /*find LRU from the page table return the index of it, return -1 if failed*/
+bool findIfElementexists(pagetable* pt, int logicaladdress); /*find if the element already exists*/
 int removeElement(pagetable *pt, int index);                 /*remove specified element*/
 int printPt(pagetable *pt);                                  /*prints out the contents of the page table, used for debuging*/
 
