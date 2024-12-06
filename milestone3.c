@@ -426,7 +426,7 @@ int main(int argc, char *argv[]) {
    printf("\tPage Table Hits: %d\n", pageHits);
    printf("\tPages from Free: %d\n", pagesFreed);
    printf("\tTotal Page Faults: %d\n\n\n", pageFaults);
-   printf("Page Table Useage Per Process");
+   printf("Page Table Useage Per Process\n");
    printf("\t----------\n");
 
    if (file1 != NULL) {
